@@ -41,4 +41,8 @@ This configuration file should contain the user name and password to access the 
 
 ## Usage
 
-Simply launch the script from the command line. No argument is needed as everything is stored in the configuration files.
+Simply launch the script from the command line:
+
+	./db-update.sh
+
+No argument is needed as everything is stored in the configuration files.
