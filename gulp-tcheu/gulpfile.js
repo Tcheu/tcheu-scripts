@@ -38,11 +38,11 @@ var notifyBrowserSync = function(msg, type)
 	}
 
 	msg = (msg instanceof Array) ? msg.join('<br />') : msg;
-	msg = '<p style="text-align:left;">' + msg + '</p>';
+	msg = '<div style="text-align:left;">' + msg + '</div>';
 
-	//Easter egg: insert your logo here ^^
+	//Easter egg: we will optionally display a logo here
 	if( 'logo' in config.global.notifications && config.global.notifications.logo.length > 0 ) {
-		msg = msg + '<p style="text-align:right;"><img src="' + config.global.logo + '" width="32" /></p>';
+		msg = msg + '<div style="text-align:right;"><img src="' + config.global.notifications.logo + '" width="32" /></div>';
 	}
 
 	plugins.browserSync.notify(msg, msgTimeout);
@@ -57,7 +57,7 @@ var notify = function(msg, type)
 };
 
 //Error handler
-var onError = function(error)
+var handleError = function(error)
 {
 	var msg = [];
 	msg.push('Error: ' + error.message);
@@ -65,7 +65,6 @@ var onError = function(error)
 	msg.push('Line number: ' + error.lineNumber);
 
 	notify(msg);
-	this.emit('end');
 };
 
 
@@ -94,32 +93,45 @@ gulp.task('startStaticServer', function() {
 gulp.task('compileStyles', function() {
 	notify('Compiling styles');
 
-	gulp.src( config.css.src )
-		.pipe(plugins.plumber({ errorHandler: onError }))
+	var stream = gulp.src( config.css.src )
+		.pipe(plugins.plumber({ errorHandler: function(error) {
+				handleError(error);
+				this.emit('end');
+			}
+		}))
 		.pipe(plugins.sass())
 		.pipe(plugins.autoprefixer( config.autoprefixer ))
 		.pipe(gulp.dest( config.css.dest ))
 		.pipe(plugins.browserSync.reload( {stream:true} ));
 
-	notify('Styles compiled');
+	return stream;
 });
 
-//Compile JavaScript
-gulp.task('compileScripts', function() {
-	notify('Compiling scripts');
+//Check scripts
+gulp.task('checkScripts', function() {
+	notify('Checking scripts');
 
-	gulp.src( config.js.src )
-		.pipe(plugins.plumber({ errorHandler: onError }))
+	var stream = gulp.src( config.js.src )
+		.pipe(plugins.plumber({ errorHandler: handleError }))
 		.pipe(plugins.eslint( config.eslint ))
 		.pipe(plugins.eslint.format())
-		.pipe(plugins.eslint.failOnError())
+		.pipe(plugins.eslint.failAfterError());
+
+	return stream;
+});
+
+//Compile scripts
+gulp.task('compileScripts', ['checkScripts'],function() {
+	notify('Compiling scripts');
+
+	var stream = gulp.src( config.js.src )
 		.pipe(plugins.concat( config.js.bundleFileName ))
 		.pipe(gulp.dest( config.js.dest ))
 		.pipe(plugins.rename( config.js.bundleFileName.replace('.js', '.min.js') ))
 		.pipe(plugins.uglify())
 		.pipe(gulp.dest( config.js.dest ));
 
-	notify('Scripts compiled');
+	return stream;
 });
 
 //Monitor file changes

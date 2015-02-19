@@ -1,11 +1,6 @@
 module.exports = {
 	/* Main settings */
 
-	//Tasks configuration
-	"tasks": {
-		"default": ["dev"],
-		"dev": ["compileStyles", "compileScripts", "startStaticServer", "startBrowserSync", "watchFiles"]
-	},
 	//Global configuration
 	"global": {
 		//Notifications options
@@ -18,6 +13,13 @@ module.exports = {
 			"errorTimeout": 5000
 		}
 	},
+
+	//Tasks lists
+	"tasks": {
+		"default": ["dev"],
+		"dev": ["compileStyles", "compileScripts", "startStaticServer", "startBrowserSync", "watchFiles"]
+	},
+
 	//Watch files configuration
 	"watchFiles": {
 		"./assets/css/*.scss": ["compileStyles"],
