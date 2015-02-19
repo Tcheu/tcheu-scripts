@@ -102,6 +102,10 @@ gulp.task('compileStyles', function() {
 		.pipe(plugins.sass())
 		.pipe(plugins.autoprefixer( config.autoprefixer ))
 		.pipe(gulp.dest( config.css.dest ))
+		.pipe(plugins.browserSync.reload( {stream:true} ))
+		.pipe(plugins.rename({suffix:'.min'}))
+		.pipe(plugins.minifyCss())
+		.pipe(gulp.dest( config.css.dest ))
 		.pipe(plugins.browserSync.reload( {stream:true} ));
 
 	return stream;
