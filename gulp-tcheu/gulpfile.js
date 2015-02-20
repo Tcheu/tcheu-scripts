@@ -11,6 +11,11 @@ var gulp = require('gulp'),
 		//Add a prefix for each dependency that is not specific to gulp
 		pattern: ['gulp-*', 'gulp.*', 'browser-sync', 'ecstatic']
 	}),
+	//To clean files
+	del = require('del'),
+	//Load package.json
+	fs = require('fs'),
+	pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8')),
 	//We load the configuration file
 	config = require('./gulp-config');
 
@@ -100,13 +105,17 @@ gulp.task('compileStyles', function() {
 		.pipe(plugins.sass())
 		.pipe(plugins.autoprefixer( config.autoprefixer ))
 		.pipe(gulp.dest( config.css.dest ))
-		.pipe(plugins.browserSync.reload( {stream:true} ))
-		.pipe(plugins.rename({suffix:'.min'}))
-		.pipe(plugins.minifyCss())
-		.pipe(gulp.dest( config.css.dest ))
 		.pipe(plugins.browserSync.reload( {stream:true} ));
 
 	return stream;
+});
+
+//Compress styles
+gulp.task('compressStyles', function() {
+	var stream = gulp.src( config.css.dest + '/' + config.css.bundleFileName )
+		.pipe(plugins.rename({suffix:'.' + pkg.version + '.min'}))
+		.pipe(plugins.minifyCss())
+		.pipe(gulp.dest( config.css.dest ));
 });
 
 //Check scripts
@@ -124,12 +133,18 @@ gulp.task('checkScripts', function() {
 gulp.task('compileScripts', ['checkScripts'],function() {
 	var stream = gulp.src( config.js.src )
 		.pipe(plugins.concat( config.js.bundleFileName ))
-		.pipe(gulp.dest( config.js.dest ))
-		.pipe(plugins.rename( config.js.bundleFileName.replace('.js', '.min.js') ))
-		.pipe(plugins.uglify())
 		.pipe(gulp.dest( config.js.dest ));
 
 	return stream;
+});
+
+//Compress scripts
+gulp.task('compressScripts', function() {
+	var stream = gulp.src( config.js.dest + '/' + config.js.bundleFileName )
+		.pipe(plugins.stripDebug())
+		.pipe(plugins.rename({suffix:'.' + pkg.version + '.min'}))
+		.pipe(plugins.uglify())
+		.pipe(gulp.dest( config.js.dest ));
 });
 
 //Optimize images
@@ -139,6 +154,14 @@ gulp.task('optimizeImages', function() {
 		.pipe(gulp.dest( config.img.dest ));
 
 	return stream;
+});
+
+//Clean our assets
+gulp.task('clean', function() {
+	del([
+		config.js.dest,
+		config.css.dest
+	]);
 });
 
 //Monitor file changes

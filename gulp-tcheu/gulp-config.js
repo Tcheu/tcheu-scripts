@@ -17,12 +17,13 @@ module.exports = {
 	//Tasks lists
 	"tasks": {
 		"default": ["dev"],
-		"dev": ["compileStyles", "compileScripts", "startStaticServer", "startBrowserSync", "watchFiles"]
+		"dev": ["clean", "compileStyles", "compileScripts", "startStaticServer", "startBrowserSync", "watchFiles"],
+		"prod": ["clean", "compileStyles", "compressStyles", "compileScripts", "compressScripts", "optimizeImages"]
 	},
 
 	//Watch files configuration
 	"watchFiles": {
-		"./assets/css/*.scss": ["compileStyles"],
+		"./assets/css/src/*.scss": ["compileStyles"],
 		"./assets/js/src/**/*.js": ["compileScripts"],
 		"*.html,./assets/js/dist/*.js": ["reloadBrowserSync"]
 	},
@@ -45,6 +46,7 @@ module.exports = {
 	//ESLint config
 	"eslint": {
 		"rules": {
+			"comma-spacing": false,
 			"quotes": 0,
 			"no-console": 1
 		},
@@ -67,9 +69,11 @@ module.exports = {
 	//Styles compilation
 	"css": {
 		//Path or pattern match one or more SCSS files
-		"src": "./assets/css/main.scss",
+		"src": "./assets/css/src/main.scss",
+		//Bundle file name
+		"bundleFileName": "main.css",
 		//Destination folder for the compiled CSS
-		"dest": "./assets/css"
+		"dest": "./assets/css/dist"
 	},
 	//Image optimization
 	"img": {
