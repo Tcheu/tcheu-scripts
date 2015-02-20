@@ -71,6 +71,16 @@ module.exports = {
 		//Destination folder for the compiled CSS
 		"dest": "./assets/css"
 	},
+	//Image optimization
+	"img": {
+		"src": "./assets/img/**/*.{jpg,png,gif}",
+		"dest": "./assets/img"
+	},
+	//Imagemin options
+	"imagemin": {
+        "progressive": true,
+        "interlaced": true
+    },
 	//Static server config
 	"staticServer": {
 		"baseDir": "./",

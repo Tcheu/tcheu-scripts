@@ -91,8 +91,6 @@ gulp.task('startStaticServer', function() {
 
 //Compile styles
 gulp.task('compileStyles', function() {
-	notify('Compiling styles');
-
 	var stream = gulp.src( config.css.src )
 		.pipe(plugins.plumber({ errorHandler: function(error) {
 				handleError(error);
@@ -113,8 +111,6 @@ gulp.task('compileStyles', function() {
 
 //Check scripts
 gulp.task('checkScripts', function() {
-	notify('Checking scripts');
-
 	var stream = gulp.src( config.js.src )
 		.pipe(plugins.plumber({ errorHandler: handleError }))
 		.pipe(plugins.eslint( config.eslint ))
@@ -126,14 +122,21 @@ gulp.task('checkScripts', function() {
 
 //Compile scripts
 gulp.task('compileScripts', ['checkScripts'],function() {
-	notify('Compiling scripts');
-
 	var stream = gulp.src( config.js.src )
 		.pipe(plugins.concat( config.js.bundleFileName ))
 		.pipe(gulp.dest( config.js.dest ))
 		.pipe(plugins.rename( config.js.bundleFileName.replace('.js', '.min.js') ))
 		.pipe(plugins.uglify())
 		.pipe(gulp.dest( config.js.dest ));
+
+	return stream;
+});
+
+//Optimize images
+gulp.task('optimizeImages', function() {
+	var stream = gulp.src( config.img.src )
+		.pipe(plugins.imagemin( config.imagemin ))
+		.pipe(gulp.dest( config.img.dest ));
 
 	return stream;
 });
