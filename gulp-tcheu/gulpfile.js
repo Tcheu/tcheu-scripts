@@ -65,9 +65,17 @@ var notify = function(msg, type)
 var handleError = function(error)
 {
 	var msg = [];
+
 	msg.push('Error: ' + error.message);
-	msg.push('File name: ' + error.fileName);
-	msg.push('Line number: ' + error.lineNumber);
+
+	if( 'plugin' in error) {
+		msg.push('Plugin: ' + error.plugin);
+	}
+
+	if( 'fileName' in error && 'lineNumber' in error ) {
+		msg.push('File name: ' + error.fileName);
+		msg.push('Line number: ' + error.lineNumber);
+	}
 
 	notify(msg);
 };
