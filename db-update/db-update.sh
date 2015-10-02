@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Import the configuration file
-. .db-update.cfg
+source ./db-update.cfg
 
 #Script variables
 SOCKET_FILE=.db-update-socket
